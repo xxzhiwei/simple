@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.aojiaodage.dao.PermissionDao">
+
+    <resultMap id="roleWithCodeMap" type="com.aojiaodage.vo.RoleWithCode">
+        <result property="roleId" column="role_id" />
+        <collection property="codes" ofType="java.lang.String">
+            <result column="code" />
+        </collection>
+    </resultMap>
+    
+    <sql id="selectPermissionListByUserIdSql">
+        select t1.id, `type`, `value`, `name`, `path`, `order`, extra, parent_id
+        from tb_permission t1
+            join tb_role_permission t2 on t1.id = t2.permission_id where t2.role_id in (select role_id from tb_user_role where user_id = #{id})
+    </sql>
+
+<!--  保留（说不定以后会用到；麻了，现在的前端根本不用这种接口；需要一种更简单、更松散的接口）  -->
+<!--    <select id="selectRolePermissionList" resultType="com.aojiaodage.vo.PermissionWithAssigned">-->
+<!--        select t1.id, `type`, `value`, `name`, `path`, `order`, extra, parent_id, IF(t3.id is not null, 1, 0) assigned-->
+<!--        from tb_permission t1-->
+<!--            left join (select id from tb_role_permission t2 where role_id = #{roleId}) t3 on t1.id = t3.id-->
+<!--    </select>-->
+    <select id="selectPermissionListByRoleId" resultType="com.aojiaodage.entity.Permission">
+        select t1.id, `type`, `value`, `name`, `path`, `order`, extra, parent_id from tb_permission t1
+             join tb_role_permission t2 on t1.id = t2.permission_id where t2.role_id = #{id};
+    </select>
+
+    <!--  通过userId查询权限  -->
+    <select id="selectPermissionListUserId" resultType="com.aojiaodage.entity.Permission">
+        <include refid="selectPermissionListByUserIdSql"></include>
+    </select>
+
+    <select id="selectMenuListByUserId" resultType="com.aojiaodage.entity.Permission">
+        <include refid="selectPermissionListByUserIdSql"></include>
+        and `type` = 1
+    </select>
+
+    <!--  通过userId查询角色&权限码，并以roleId分组  -->
+    <select id="selectRoleListByUserId" resultMap="roleWithCodeMap">
+        select t1.role_id, t2.value code from tb_role_permission t1
+              join tb_permission t2 on t2.id = t1.permission_id
+        where role_id in
+              (select role_id from tb_user_role where user_id = #{id})
+        group by t1.role_id, t2.value
+    </select>
+</mapper>

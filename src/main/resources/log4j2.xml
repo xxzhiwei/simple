@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--日志级别以及优先级排序: OFF > FATAL > ERROR > WARN > INFO > DEBUG > TRACE > ALL -->
+<!--Configuration后面的status用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，可以看到log4j2内部各种详细输出-->
+<Configuration status="INFO">
+    <properties>
+        <property name="HOME">/Users/xieshixin/learnplace/java/crm-fri-workshop/logs</property>
+        <property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</property>
+    </properties>
+    <!--先定义所有的appender-->
+    <Appenders>
+        <!--输出日志信息到控制台-->
+        <Console name="Console" target="SYSTEM_OUT">
+            <!--控制日志输出的格式-->
+            <PatternLayout pattern="${PATTERN}"/>
+        </Console>
+        <!-- 按每天分割错误日志 -->
+        <RollingFile name="Error" fileName="${HOME}/error.log" filePattern="${HOME}/error-%d{yyyy-MM-dd}.log">
+            <ThresholdFilter level="ERROR" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="${PATTERN}"/>
+            <TimeBasedTriggeringPolicy />
+        </RollingFile>
+        <RollingFile name="Rolling" fileName="${HOME}/rolling.log"
+                     filePattern="${HOME}/$${date:yyyy-MM}/rolling-%d{yyyy-MM-dd}-%i.log.gz">
+            <PatternLayout pattern="${PATTERN}"/>
+            <!--日志文件最大值 第二天压缩-->
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="10 MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <!--然后定义logger，只有定义了logger并引入的appender，appender才会生效-->
+    <!--root：用于指定项目的根日志，如果没有单独指定Logger，则会使用root作为默认的日志输出-->
+    <Loggers>
+        <Root level="INFO">
+            <AppenderRef ref="Console"/>
+            <AppenderRef ref="Error"/>
+            <AppenderRef ref="Rolling"/>
+        </Root>
+    </Loggers>
+</Configuration>
