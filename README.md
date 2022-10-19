@@ -3,6 +3,6 @@
 
 ## 相关资源
 
-### 后台管理系统
+### 管理系统前端
 
 simple-admin：https://github.com/xxzhiwei/simple-admin.git

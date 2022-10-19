@@ -1,5 +1,6 @@
 package com.aojiaodage.entity;
 
+import com.aojiaodage.interfaces.Children;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
@@ -19,13 +20,13 @@ import java.util.List;
 @TableName("tb_permission")
 @Getter
 @Setter
-public class Permission implements Serializable {
+public class Permission implements Serializable, Children<Permission> {
     private static final long serialVersionUID = -59106826863538986L;
 
     @TableId
     private Integer id;
     /**
-     * 权限类型。1为菜单，2为操作，3...
+     * 权限类型；1为菜单，2为操作，3...
      */
     private Integer type;
     /**

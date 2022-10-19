@@ -6,8 +6,10 @@ import com.aojiaodage.entity.Permission;
 import com.aojiaodage.entity.RolePermission;
 import com.aojiaodage.enums.PermissionType;
 import com.aojiaodage.exception.CustomException;
+import com.aojiaodage.interfaces.ChildPredicate;
 import com.aojiaodage.service.PermissionService;
 import com.aojiaodage.service.RolePermissionService;
+import com.aojiaodage.util.TreeMaker;
 import com.aojiaodage.vo.RoleWithCode;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -20,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,6 +30,10 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
 
     @Autowired
     RolePermissionService rolePermissionService;
+
+    Predicate<Permission> rootPredicate = item -> item.getParentId() != null && item.getParentId().equals(-1);
+
+    ChildPredicate<Permission> childPredicate = (Permission o1, Permission o2) -> o1.getParentId().equals(o2.getId());
 
     @Cacheable(cacheNames = "roleToCode", key = "#id")
     @Override
@@ -43,8 +50,8 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionDao, Permission
 
     @Override
     public List<Permission> getList() {
-        List<Permission> permissions = list();
-        return setChildrenForRoots(permissions);
+        List<Permission> list = list();
+        return TreeMaker.make(list, rootPredicate, childPredicate);
     }
 
     @Override

@@ -3,7 +3,7 @@
 <!--Configuration后面的status用于设置log4j2自身内部的信息输出，可以不设置，当设置成trace时，可以看到log4j2内部各种详细输出-->
 <Configuration status="INFO">
     <properties>
-        <property name="HOME">/Users/xieshixin/learnplace/java/crm-fri-workshop/logs</property>
+        <property name="HOME">/Users/xieshixin/projectplace/simple/logs</property>
         <property name="PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n</property>
     </properties>
     <!--先定义所有的appender-->

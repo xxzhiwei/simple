@@ -51,17 +51,17 @@ public class UserServiceImpl extends ServiceImpl<UserDao, User> implements UserS
 
     @Override
     public LoginInfo<User> login(LoginForm loginForm) {
-        // 1、根据用户名查询数据库（确保用户名在数据库是唯一的
+        // 根据用户名查询数据库（确保用户名在数据库是唯一的
         LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(User::getUsername, loginForm.getUsername());
         wrapper.eq(User::getPassword, Md5Util.encode(loginForm.getPassword()));
 
         User user = getOne(wrapper);
-        // 2、找不到用户时，返回与密码错误时相同的提示信息
+        // 找不到用户时，返回与密码错误时相同的提示信息
         if (user == null) {
             throw new WrongUsernameOrPwdException();
         }
-        // 3、查询用户角色
+        // 查询用户角色
         if (user.getState().equals(2)) {
             throw new CustomException("账户已被禁用");
         }

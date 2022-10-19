@@ -18,7 +18,6 @@ public interface RoleService extends IService<Role> {
      * @param id 用户id
      * @return List<Integer> 角色id列表
      */
-    // @Cacheable(cacheNames = "roleMapping", key = "#id")
     List<Integer> getRoleIdsByUserId(Integer id);
 
     Page<Role> getPagination(Query query);
